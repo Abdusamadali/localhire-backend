@@ -1,16 +1,21 @@
-package entity;
+package com.abdus.localhirebackend.entity;
 
-import entity.Type.JobStatus;
-import entity.Type.JobType;
-import entity.Type.ShiftType;
+import com.abdus.localhirebackend.entity.Type.JobStatus;
+import com.abdus.localhirebackend.entity.Type.JobType;
+import com.abdus.localhirebackend.entity.Type.ShiftType;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@RequiredArgsConstructor
 public class JobPost {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false)
@@ -19,7 +24,6 @@ public class JobPost {
     private String  title;
 
     private Integer salary;
-
 
     @Enumerated(EnumType.STRING)
     private ShiftType shiftType;

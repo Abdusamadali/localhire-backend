@@ -1,4 +1,4 @@
-package entity;
+package com.abdus.localhirebackend.entity;
 
 import jakarta.persistence.Embeddable;
 

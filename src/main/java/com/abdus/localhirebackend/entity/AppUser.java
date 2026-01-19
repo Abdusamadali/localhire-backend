@@ -1,6 +1,6 @@
-package entity;
+package com.abdus.localhirebackend.entity;
 
-import entity.Type.Role;
+import com.abdus.localhirebackend.entity.Type.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
