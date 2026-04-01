@@ -25,20 +25,33 @@ public class EmployeeService {
 
     private final JobPostRepository jobPostRepository;
     private final JobApplicationRepository jobApplicationRepository;
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+
+
+
     public List<JobPost> getAllJobs() {
         return jobPostRepository.findAll();
     }
 
     public ResponseEntity<?> apply(Long jobId) {
-
         JobPost job = jobPostRepository.findById(jobId).orElseThrow(
                 ()-> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Job doest not exists")
         );
 
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        AppUser  user =(AppUser) auth.getPrincipal();
+
+        List<JobApplication> allByEmployee = jobApplicationRepository.findAllByEmployee(user);
+        allByEmployee.forEach((x)->{
+            if(x.getJobPost().getId()==jobId){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"application already exist");
+            }
+        });
+
         JobApplication newJob = JobApplication.builder()
                 .jobPost(job)
-                .employee((AppUser) auth.getPrincipal())
+                .employee(user)
                 .status(ApplicationStatus.APPLIED)
                 .build();
         jobApplicationRepository.save(newJob);
@@ -46,6 +59,7 @@ public class EmployeeService {
     }
 
     public ResponseEntity<List<ResponseApplicationDto>> getMyJob() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         AppUser user = (AppUser) auth.getPrincipal();
         List<ResponseApplicationDto> list = jobApplicationRepository.findAllByEmployee(user)
                 .stream()

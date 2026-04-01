@@ -2,16 +2,14 @@ package com.abdus.localhirebackend.entity;
 
 import com.abdus.localhirebackend.entity.Type.ApplicationStatus;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Setter
 @Getter
 @Builder
-@RequiredArgsConstructor
+@NoArgsConstructor   //  for JPA
+@AllArgsConstructor  //  for @Builder
 public class JobApplication {
 
     @Id
@@ -20,6 +18,9 @@ public class JobApplication {
 
     @ManyToOne
     private JobPost jobPost;
+
+    @ManyToOne
+    private AppUser employer;
 
     @ManyToOne
     private AppUser employee;

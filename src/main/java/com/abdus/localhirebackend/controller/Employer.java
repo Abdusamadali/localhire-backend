@@ -27,7 +27,7 @@ public class Employer {
     }
 
     @GetMapping
-    ResponseEntity<List<JobPost>>getJobs(){
+    ResponseEntity<List<ResponseJobDto>>getJobs(){
         return employerService.getJobs();
     }
 
@@ -55,6 +55,5 @@ public class Employer {
     ResponseEntity<?>rejectJobApplication(@PathVariable Long id){
         return employerService.rejectJobApplication(id);
     }
-
 
 }

@@ -10,8 +10,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class RequestJobPostDto {
-
-    private String title;
     private Integer salary;
     private JobStatus status;
     private ShiftType shiftType;

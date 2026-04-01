@@ -4,24 +4,20 @@ import com.abdus.localhirebackend.entity.Type.JobStatus;
 import com.abdus.localhirebackend.entity.Type.JobType;
 import com.abdus.localhirebackend.entity.Type.ShiftType;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@RequiredArgsConstructor
+@NoArgsConstructor   //  for JPA
+@AllArgsConstructor  //  for Builder
 public class JobPost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false)
     private Long id;
-
-    private String  title;
 
     private Integer salary;
 
@@ -34,10 +30,11 @@ public class JobPost {
     @ManyToOne
     private AppUser employer;
 
+    private  String description;
+
     @Embedded
     private Location location;
 
     @Enumerated(EnumType.STRING)
     private JobStatus jobStatus;
-
 }

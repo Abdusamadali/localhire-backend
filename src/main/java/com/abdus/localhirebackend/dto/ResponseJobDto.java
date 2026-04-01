@@ -6,14 +6,20 @@ import com.abdus.localhirebackend.entity.Location;
 import com.abdus.localhirebackend.entity.Type.JobStatus;
 import com.abdus.localhirebackend.entity.Type.JobType;
 import com.abdus.localhirebackend.entity.Type.ShiftType;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Builder
+@Setter
 public class ResponseJobDto {
     private Long id;
-    private String title;
     private Integer salary;
     private JobStatus status;
     private ShiftType shiftType;
     private JobType jobType;
     private Location location;
-    private AppUser employer;
+    private EmployerDto employer;
+    private String description;
 }
