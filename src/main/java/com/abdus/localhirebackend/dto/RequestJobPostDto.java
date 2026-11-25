@@ -10,9 +10,11 @@ import lombok.Setter;
 @Setter
 @Getter
 public class RequestJobPostDto {
-    private Integer salary;
+    private Integer minSalary;
+    private Integer maxSalary;
     private JobStatus status;
     private ShiftType shiftType;
     private JobType jobType;
     private Location location;
+    private String description;
 }

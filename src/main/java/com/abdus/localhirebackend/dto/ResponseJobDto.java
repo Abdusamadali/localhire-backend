@@ -3,6 +3,7 @@ package com.abdus.localhirebackend.dto;
 import com.abdus.localhirebackend.controller.Employer;
 import com.abdus.localhirebackend.entity.AppUser;
 import com.abdus.localhirebackend.entity.Location;
+import com.abdus.localhirebackend.entity.Type.ApplicationStatus;
 import com.abdus.localhirebackend.entity.Type.JobStatus;
 import com.abdus.localhirebackend.entity.Type.JobType;
 import com.abdus.localhirebackend.entity.Type.ShiftType;
@@ -15,7 +16,8 @@ import lombok.Setter;
 @Setter
 public class ResponseJobDto {
     private Long id;
-    private Integer salary;
+    private Integer minSalary;
+    private  Integer maxSalary;
     private JobStatus status;
     private ShiftType shiftType;
     private JobType jobType;

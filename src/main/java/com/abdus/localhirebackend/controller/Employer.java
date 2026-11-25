@@ -31,14 +31,14 @@ public class Employer {
         return employerService.getJobs();
     }
 
-    @GetMapping("/jobs/{jobId}/applications")
-    ResponseEntity<List<JobApplication>>getJobsApplications(@PathVariable Long jobId){
-        return ResponseEntity.ok(employerService.getApplicationByJobId(jobId));
-    }
-
     @PutMapping("/{id}")
     ResponseEntity<?> updateJob(@RequestBody RequestJobPostDto dto, @PathVariable Long id){
         return employerService.updateJob(dto,id);
+    }
+
+    @GetMapping("/jobs/{jobId}/applications")
+    ResponseEntity<List<ResponseApplicationDto>>getJobsApplications(@PathVariable Long jobId){
+        return ResponseEntity.ok(employerService.getApplicationByJobId(jobId));
     }
 
     @PutMapping("/{id}/close")
@@ -55,5 +55,4 @@ public class Employer {
     ResponseEntity<?>rejectJobApplication(@PathVariable Long id){
         return employerService.rejectJobApplication(id);
     }
-
 }

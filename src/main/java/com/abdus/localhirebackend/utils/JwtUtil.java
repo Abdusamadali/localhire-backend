@@ -19,22 +19,18 @@ public class JwtUtil {
     }
 
     public String generateToken(AppUser user){
-        return Jwts.builder()
-                .setSubject(user.getUsername())
-                .claim("userId",user.getId())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60*10))
+        return Jwts.builder().subject(user.getUsername())
+                .claim("userId", user.getId()).issuedAt(new Date()).expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(getSecretKey())
                 .compact();
     }
 
     public String extractUsername(String token){
-        return Jwts.parserBuilder()
+        return Jwts.parser()
 //                .setSigningKey(SECRET.getBytes(StandardCharsets.UTF_8))
-                .setSigningKey(getSecretKey())
+                .verifyWith(getSecretKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody()
+                .parseSignedClaims(token).getPayload()
                 .getSubject();
     }
 
@@ -44,11 +40,10 @@ public class JwtUtil {
     }
 
     private boolean isTokenExpired(String token) {
-        Date expiration = Jwts.parserBuilder()
-                .setSigningKey(getSecretKey())
+        Date expiration = Jwts.parser()
+                .verifyWith(getSecretKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody()
+                .parseSignedClaims(token).getPayload()
                 .getExpiration();
         return expiration.before(new Date());
     }

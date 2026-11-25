@@ -19,7 +19,8 @@ public class JobPost {
     @Column(nullable = false)
     private Long id;
 
-    private Integer salary;
+    private Integer minSalary;
+    private Integer maxSalary;
 
     @Enumerated(EnumType.STRING)
     private ShiftType shiftType;

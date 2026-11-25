@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JobPostSpecifications {
+
     public static Specification<JobPost> build(
             String title, Integer minSalary, ShiftType shift,
             JobType type, String city, String state) {
@@ -20,6 +21,7 @@ public class JobPostSpecifications {
             if (title != null && !title.isBlank()) {
                 predicates.add(cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%"));
             }
+
             if (minSalary != null) {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("salary"), minSalary));
             }

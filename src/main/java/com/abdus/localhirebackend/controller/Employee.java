@@ -8,6 +8,7 @@ import com.abdus.localhirebackend.entity.Type.JobType;
 import com.abdus.localhirebackend.entity.Type.ShiftType;
 import com.abdus.localhirebackend.repository.JobPostRepository;
 import com.abdus.localhirebackend.service.EmployeeService;
+import com.abdus.localhirebackend.utils.JobMapper;
 import com.abdus.localhirebackend.utils.JobPostSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,29 +29,13 @@ public class Employee {
     ResponseEntity<List<ResponseJobDto>>getJobs(){
 
         List<ResponseJobDto> allJobs = employeeService.getAllJobs().stream().map(
-           e-> {
-               return ResponseJobDto.builder()
-                         .jobType(e.getJobType())
-                         .id(e.getId())
-                         .employer(
-                                 EmployerDto.builder()
-                                         .username(e.getEmployer().getUsername())
-                                         .id(e.getEmployer().getId())
-                                         .build()
-                         )
-                         .salary(e.getSalary())
-                         .shiftType(e.getShiftType())
-                         .location(e.getLocation())
-                         .status(e.getJobStatus())
-                         .description(e.getDescription())
-                         .build();
-           }
+                JobMapper::toDto
         ).toList();
         return ResponseEntity.ok(allJobs);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<JobPost>> filterJobs(
+    public ResponseEntity<List<ResponseJobDto>> filterJobs(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) Integer minSalary,
             @RequestParam(required = false) ShiftType shift,
@@ -59,7 +44,7 @@ public class Employee {
             @RequestParam(required = false) String state) {
 
         Specification<JobPost> spec = JobPostSpecifications.build(title, minSalary, shift, type, city, state);
-        return ResponseEntity.ok(jobPostRepository.findAll(spec));
+        return employeeService.search(spec);
     }
 
     @PostMapping("/jobs/{id}")

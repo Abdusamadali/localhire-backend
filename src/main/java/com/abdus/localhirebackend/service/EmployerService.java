@@ -1,9 +1,6 @@
 package com.abdus.localhirebackend.service;
 
-import com.abdus.localhirebackend.dto.EmployerDto;
-import com.abdus.localhirebackend.dto.RequestJobPostDto;
-import com.abdus.localhirebackend.dto.ResponseApplicationDto;
-import com.abdus.localhirebackend.dto.ResponseJobDto;
+import com.abdus.localhirebackend.dto.*;
 import com.abdus.localhirebackend.entity.AppUser;
 import com.abdus.localhirebackend.entity.JobApplication;
 import com.abdus.localhirebackend.entity.JobPost;
@@ -12,6 +9,7 @@ import com.abdus.localhirebackend.entity.Type.JobStatus;
 import com.abdus.localhirebackend.repository.JobApplicationRepository;
 import com.abdus.localhirebackend.repository.JobPostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.UpdateSpecification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +30,7 @@ public class EmployerService {
     final JobPostRepository jobPostRepository;
     final JobApplicationRepository jobApplicationRepository;
 
-//    @PreAuthorize("hasRole('EMPLOYER')")
+    @PreAuthorize("hasRole('EMPLOYER')")
     public  ResponseEntity<?> updateJob(RequestJobPostDto dto, Long id) {
         AppUser user = (AppUser) Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
 
@@ -46,10 +44,12 @@ public class EmployerService {
 
             job.setJobStatus(dto.getStatus());
             job.setJobType(dto.getJobType());
-            job.setSalary(dto.getSalary());
+            job.setMinSalary(dto.getMinSalary());
+            job.setMaxSalary(dto.getMaxSalary());
             job.setShiftType(dto.getShiftType());
             job.setLocation(dto.getLocation());
-
+            job.setDescription(dto.getDescription());
+//            jobPostRepository.update((UpdateSpecification<JobPost>) job);
            return ResponseEntity.ok( jobPostRepository.save(job));
 
     }
@@ -66,7 +66,9 @@ public class EmployerService {
                 .jobStatus(JobStatus.OPEN)
                 .location(dto.getLocation())
                 .shiftType(dto.getShiftType())
-                .salary(dto.getSalary())
+                .minSalary(dto.getMinSalary())
+                .maxSalary(dto.getMaxSalary())
+                .description(dto.getDescription())
                 .build();
         JobPost save = jobPostRepository.save(jobPost);
         ResponseJobDto jobDto = ResponseJobDto.builder()
@@ -80,7 +82,7 @@ public class EmployerService {
                 .id(save.getId())
                 .location(save.getLocation())
                 .status(save.getJobStatus())
-                .salary(save.getSalary())
+//                .salary(save.getSalary())
                 .shiftType(save.getShiftType())
                 .build();
         return new ResponseEntity<>(jobDto, HttpStatus.OK);
@@ -95,7 +97,9 @@ public class EmployerService {
                    .id(e.getId())
                    .location(e.getLocation())
                    .status(e.getJobStatus())
-                   .salary(e.getSalary())
+                   .minSalary(e.getMinSalary())
+                  .maxSalary(e.getMaxSalary())
+                  .description(e.getDescription())
                    .employer(
                            EmployerDto.builder()
                                    .username(e.getEmployer().getUsername())
@@ -109,16 +113,49 @@ public class EmployerService {
         return ResponseEntity.ok(list);
     }
 
-    public List<JobApplication> getApplicationByJobId(Long jobId) {
+    public List<ResponseApplicationDto> getApplicationByJobId(Long jobId) {
             AppUser user =(AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             JobPost job = jobPostRepository.findById(jobId).orElseThrow(
-                    ()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Job does not exits ")
+                    ()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Job does not exists ")
             );
 
             if(!job.getEmployer().getId().equals(user.getId()))throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You are not allowed to view applications for this job");
 
-            return jobApplicationRepository.findAllByJobPost(job);
-
+        return jobApplicationRepository.findAllByJobPost(job)
+                .stream().map(jobApplication -> ResponseApplicationDto.builder()
+                        .id(jobApplication.getId())
+                        .employer(
+                                ResponseAppUserDto.builder()
+                                        .id(jobApplication.getEmployer().getId())
+                                        .username(jobApplication.getEmployer().getUsername())
+                                        .build()
+                        )
+                        .employee(
+                                ResponseAppUserDto.builder()
+                                        .id(jobApplication.getEmployee().getId())
+                                        .username(jobApplication.getEmployee().getUsername())
+                                        .build()
+                        )
+                        .status(jobApplication.getStatus())
+                        .jobPost(
+                                ResponseJobDto.builder()
+                                        .employer(
+                                                EmployerDto.builder()
+                                                        .id(jobApplication.getJobPost().getEmployer().getId())
+                                                        .username(jobApplication.getJobPost().getEmployer().getUsername())
+                                                        .build()
+                                        )
+                                        .id(jobApplication.getJobPost().getId())
+                                        .jobType(jobApplication.getJobPost().getJobType())
+                                        .minSalary(jobApplication.getJobPost().getMinSalary())
+                                        .maxSalary(jobApplication.getJobPost().getMaxSalary())
+                                        .shiftType(jobApplication.getJobPost().getShiftType())
+                                        .status(jobApplication.getJobPost().getJobStatus())
+                                        .location(jobApplication.getJobPost().getLocation())
+                                        .description(jobApplication.getJobPost().getDescription())
+                                        .build()
+                        )
+                        .build()).toList();
     }
 
     public ResponseEntity<?> closeJob(Long id){

@@ -1,5 +1,6 @@
 package com.abdus.localhirebackend.dto;
 
+import com.abdus.localhirebackend.entity.AppUser;
 import com.abdus.localhirebackend.entity.JobPost;
 import com.abdus.localhirebackend.entity.Type.ApplicationStatus;
 import lombok.Builder;
@@ -11,8 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Setter
 @Builder
 public class ResponseApplicationDto {
-
     private Long id;
-    private JobPost job;
+
+    private ResponseAppUserDto employer;
+    private ResponseAppUserDto employee;
+    private ResponseJobDto jobPost;
     private ApplicationStatus status;
 }
